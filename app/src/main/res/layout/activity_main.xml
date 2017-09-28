@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    tools:context="com.cying.floatingball.MainActivity">
+
+    <Button
+        android:id="@+id/open_alert_permission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="开启悬浮窗权限"/>
+
+    <Button
+        android:id="@+id/open_accessibility"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="开启辅助功能"/>
+
+    <Button
+        android:id="@+id/open_device_permission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="开启设备管理器"/>
+
+    <Button
+        android:id="@+id/mock_home"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Home"/>
+
+
+    <Button
+        android:id="@+id/mock_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"/>
+
+    <Button
+        android:id="@+id/mock_recents"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Recents"/>
+
+    <Button
+        android:id="@+id/mock_lock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lock"/>
+</LinearLayout>
