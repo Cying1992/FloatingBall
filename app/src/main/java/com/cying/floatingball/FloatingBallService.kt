@@ -5,12 +5,16 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
+import android.graphics.Point
 import android.support.v4.view.accessibility.AccessibilityManagerCompat
 import android.util.Log
 import android.view.Gravity
-import android.view.ViewConfiguration
+import android.view.LayoutInflater
+import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
+import org.jetbrains.anko.dip
+import java.lang.reflect.Field
 
 /**
  * Created by Cying on 17/9/27.
@@ -26,6 +30,7 @@ enum class MockAction(private val action: Int) {
     HOME(AccessibilityService.GLOBAL_ACTION_HOME),
     BACK(AccessibilityService.GLOBAL_ACTION_BACK),
     RECENTS(AccessibilityService.GLOBAL_ACTION_RECENTS),
+    NOTIFICATIONS(AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS),
     LOCK(0) {
         override fun trigger(): Boolean {
             val dpm = instance?.getDevicePolicyManager()
@@ -42,21 +47,44 @@ enum class MockAction(private val action: Int) {
     }
 }
 
+fun getStatusBarHeight(context: Context): Int {
+    var c: Class<*>? = null
+    var obj: Any? = null
+    var field: Field? = null
+    var x = 0
+    var statusBarHeight = 0
+    try {
+        c = Class.forName("com.android.internal.R\$dimen")
+        obj = c!!.newInstance()
+        field = c.getField("status_bar_height")
+        x = Integer.parseInt(field!!.get(obj).toString())
+        statusBarHeight = context.resources.getDimensionPixelSize(x)
+    } catch (e1: Exception) {
+        e1.printStackTrace()
+    }
+
+    return statusBarHeight
+}
+
 class FloatingBallService : AccessibilityService() {
 
-    private var ball: FloatingBallView? = null
+    private var ball: TrackingBallLayout? = null
+
+    private var STATUS_HEIGHT = 0
+
     override fun onCreate() {
         Log.i(TAG, "onCreate")
         instance = this
+        STATUS_HEIGHT = getStatusBarHeight(this)
         val wm = getWindowManager()
-        val pm = createSmallWindowParams()
-        ball = FloatingBallView(this)
-        ball?.setBackgroundColor(resources.getColor(R.color.bg))
+        val pm = createSmallWindowParams(wm)
+        ball = LayoutInflater.from(this).inflate(R.layout.tracking_ball, null) as TrackingBallLayout?
         ball?.updatePositionCallback = object : UpdatePositionCallback {
-            override fun update(x: Float, y: Float) {
-                pm.x = x.toInt()
-                pm.y = y.toInt()
+            override fun update(view: View, x: Float, y: Float) {
+                pm.x = x.toInt() - view.width / 2
+                pm.y = y.toInt() - STATUS_HEIGHT - view.height / 2
                 wm.updateViewLayout(ball, pm)
+                resources.displayMetrics.widthPixels
             }
         }
         wm.addView(ball, pm)
@@ -91,16 +119,18 @@ class FloatingBallService : AccessibilityService() {
         Log.i(TAG, "onAccessibilityEvent")
     }
 
-    private fun createSmallWindowParams(): WindowManager.LayoutParams {
+    private fun createSmallWindowParams(wm: WindowManager): WindowManager.LayoutParams {
+        val point = Point()
+        wm.defaultDisplay.getSize(point)
         val smallWindowParams = WindowManager.LayoutParams()
         smallWindowParams.type = WindowManager.LayoutParams.TYPE_PHONE
         smallWindowParams.format = PixelFormat.RGBA_8888
         smallWindowParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         smallWindowParams.gravity = Gravity.LEFT or Gravity.TOP
-        smallWindowParams.width = 120
-        smallWindowParams.height = 120
-        smallWindowParams.x = 480
-        smallWindowParams.y = 480
+        smallWindowParams.width = dip(48)
+        smallWindowParams.height = dip(48)
+        smallWindowParams.x = point.x - dip(120)
+        smallWindowParams.y = point.y - dip(120)
         return smallWindowParams
     }
 }

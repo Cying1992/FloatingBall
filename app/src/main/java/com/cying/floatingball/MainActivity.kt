@@ -8,8 +8,8 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
-import org.jetbrains.anko.startActivity
 
 /**
  * Created by Cying on 17/9/27.
@@ -19,9 +19,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val deviceComponent = ComponentName(this, LockReceiver::class.java)
 
         val dpm = getDevicePolicyManager()
-        val deviceComponent = ComponentName(this, LockReceiver::class.java)
         open_device_permission.setOnClickListener {
             if (!dpm.isAdminActive(deviceComponent)) {
                 val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
@@ -65,4 +65,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+    override fun onResume() {
+        super.onResume()
+        val deviceComponent = ComponentName(this, LockReceiver::class.java)
+
+        open_device_permission.visibility = if (getDevicePolicyManager().isAdminActive(deviceComponent)) View.GONE else View.VISIBLE
+        open_alert_permission.visibility = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.canDrawOverlays(this)) View.GONE else View.VISIBLE
+
+    }
 }
