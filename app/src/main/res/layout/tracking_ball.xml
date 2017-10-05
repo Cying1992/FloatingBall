@@ -7,15 +7,15 @@
     android:layout_gravity="center">
 
     <View
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_gravity="center"
         android:background="@drawable/circle_bg" />
 
     <ImageView
         android:id="@+id/ball"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_gravity="center"
         android:src="@drawable/circle_ball" />
 

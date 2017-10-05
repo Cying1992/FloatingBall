@@ -4,6 +4,7 @@ package com.cying.floatingball
 
 import android.app.admin.DevicePolicyManager
 import android.content.Context
+import android.os.Vibrator
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityManager
 
@@ -19,6 +20,8 @@ inline fun Context.getDevicePolicyManager(): DevicePolicyManager {
     return getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
 }
 
-inline fun Context.getWindowManager():WindowManager{
+inline fun Context.getWindowManager(): WindowManager {
     return getSystemService(Context.WINDOW_SERVICE) as WindowManager
 }
+
+inline fun Context.getVibrator(): Vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator

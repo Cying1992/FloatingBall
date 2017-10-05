@@ -3,4 +3,20 @@
     <string name="lock_desc">锁屏描述</string>
     <string name="lock_label">锁屏标签</string>
     <string name="accessibility_desc">打开开头就能开启悬浮球</string>
+    <string-array name="actions">
+        <item>无</item>
+        <item>返回</item>
+        <item>回到桌面</item>
+        <item>切换app</item>
+        <item>下拉通知</item>
+        <item>锁屏</item>
+
+    </string-array>
+    <string-array name="action_names">
+        <item>点击</item>
+        <item>左滑</item>
+        <item>上滑</item>
+        <item>右滑</item>
+        <item>下滑</item>
+    </string-array>
 </resources>

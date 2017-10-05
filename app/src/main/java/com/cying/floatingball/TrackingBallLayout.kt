@@ -4,7 +4,6 @@ import android.content.Context
 import android.support.v4.view.ViewCompat
 import android.support.v4.widget.ViewDragHelper
 import android.util.AttributeSet
-import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
@@ -17,6 +16,8 @@ import org.jetbrains.anko.dip
 private const val TAG = "TrackingBallLayout"
 
 class TrackingBallLayout(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0, defStyleRes: Int = 0) : FrameLayout(context, attrs, defStyleAttr, defStyleRes) {
+    private val vibrator = context.getVibrator()
+    private val virbratorPattern = longArrayOf(0L, 10L, 20L, 30L)
 
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0, 0)
     constructor(context: Context) : this(context, null, 0, 0)
@@ -32,12 +33,19 @@ class TrackingBallLayout(context: Context, attrs: AttributeSet? = null, defStyle
     private var initX = 0F
     private var initY = 0F
     private val gestureListener = object : GestureDetector.SimpleOnGestureListener() {
-        override fun onLongPress(e: MotionEvent?) {
+        override fun onLongPress(e: MotionEvent) {
             isLongPressing = true
+            repeat(childCount) {
+                getChildAt(it).isActivated = true
+            }
+            if (ActionSettings.needVibrate) {
+                vibrator.vibrate(virbratorPattern, -1)
+            }
         }
 
+
         override fun onSingleTapUp(e: MotionEvent?): Boolean {
-            MockAction.BACK.trigger()
+            GESTURE.CLICK.trigger()
             return true
         }
     }
@@ -71,22 +79,21 @@ class TrackingBallLayout(context: Context, attrs: AttributeSet? = null, defStyle
                 if (isLongPressing) {
                     updatePositionCallback?.update(this, ev.rawX, ev.rawY)
                 } else {
-
                     moveVertical = Math.abs(ev.y - initY) > Math.abs(ev.x - initX)
-
                 }
             }
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> isLongPressing = false
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                isLongPressing = false
+                repeat(childCount) {
+                    getChildAt(it).isActivated = false
+                }
+            }
 
         }
 
-        if (gestureDetector.onTouchEvent(ev) || isLongPressing) {
-            dragHelper.cancel()
-        } else {
-            dragHelper.processTouchEvent(ev)
-        }
 
-
+        dragHelper.processTouchEvent(ev)
+        gestureDetector.onTouchEvent(ev)
         return true
     }
 
@@ -101,26 +108,27 @@ class TrackingBallLayout(context: Context, attrs: AttributeSet? = null, defStyle
             if (!isLongPressing) {
                 var triggered = false
                 when (releasedChild.top) {
-                    0 -> {//context.toast("top")
-                        MockAction.HOME.trigger()
+                    0 -> {
+                        GESTURE.SWIPE_TOP.trigger()
                         triggered = true
                     }
                     height - releasedChild.height -> {// context.toast("bottom")
-                        MockAction.LOCK.trigger()
+                        GESTURE.SWIPE_BOTTOM.trigger()
                         triggered = true
                     }
                 }
                 if (!triggered) {
 
                     when (releasedChild.left) {
-                        0 -> MockAction.RECENTS.trigger()
-                        width - releasedChild.width -> MockAction.NOTIFICATIONS.trigger()
+                        0 -> GESTURE.SWIPE_LEFT.trigger()
+                        width - releasedChild.width -> GESTURE.SWIPE_RIGHT.trigger()
                     }
                 }
             }
             isLongPressing = false
-            dragHelper.settleCapturedViewAt((width - releasedChild.width) / 2, (height - releasedChild.height) / 2)
-            invalidate()
+            if (dragHelper.settleCapturedViewAt((width - releasedChild.width) / 2, (height - releasedChild.height) / 2)) {
+                invalidate()
+            }
         }
 
 
@@ -133,7 +141,7 @@ class TrackingBallLayout(context: Context, attrs: AttributeSet? = null, defStyle
         }
 
         override fun clampViewPositionVertical(child: View, top: Int, dy: Int): Int {
-            if (!moveVertical) {
+            if (!moveVertical || isLongPressing) {
                 return (height - child.height) / 2
             }
 
@@ -145,8 +153,7 @@ class TrackingBallLayout(context: Context, attrs: AttributeSet? = null, defStyle
         override fun clampViewPositionHorizontal(child: View, left: Int, dx: Int): Int {
 
 
-            if (moveVertical) {
-                Log.i(TAG, dx.toString() + "----1 ")
+            if (moveVertical || isLongPressing) {
                 return (width - child.width) / 2
             }
 

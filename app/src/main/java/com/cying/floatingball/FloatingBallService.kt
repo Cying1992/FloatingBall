@@ -25,13 +25,20 @@ private const val TAG = "FloatingBallService"
 
 private var instance: AccessibilityService? = null
 
+fun getMockActionArray(): IntArray {
+    return MockAction.values().map { it.action }.toIntArray()
+}
 
-enum class MockAction(private val action: Int) {
-    HOME(AccessibilityService.GLOBAL_ACTION_HOME),
+
+enum class MockAction(val action: Int) {
+    NONE(0) {
+        override fun trigger(): Boolean = true
+    },
     BACK(AccessibilityService.GLOBAL_ACTION_BACK),
+    HOME(AccessibilityService.GLOBAL_ACTION_HOME),
     RECENTS(AccessibilityService.GLOBAL_ACTION_RECENTS),
     NOTIFICATIONS(AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS),
-    LOCK(0) {
+    LOCK(-1) {
         override fun trigger(): Boolean {
             val dpm = instance?.getDevicePolicyManager()
 
@@ -45,6 +52,11 @@ enum class MockAction(private val action: Int) {
     open fun trigger(): Boolean {
         return instance?.performGlobalAction(action) ?: false
     }
+
+    companion object {
+        fun getByAction(action: Int) = MockAction.values().firstOrNull { it.action == action }
+    }
+
 }
 
 fun getStatusBarHeight(context: Context): Int {
@@ -127,8 +139,8 @@ class FloatingBallService : AccessibilityService() {
         smallWindowParams.format = PixelFormat.RGBA_8888
         smallWindowParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         smallWindowParams.gravity = Gravity.LEFT or Gravity.TOP
-        smallWindowParams.width = dip(48)
-        smallWindowParams.height = dip(48)
+        smallWindowParams.width = dip(56)
+        smallWindowParams.height = dip(56)
         smallWindowParams.x = point.x - dip(120)
         smallWindowParams.y = point.y - dip(120)
         return smallWindowParams

@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="ring"
-    android:innerRadius="10dp"
-    android:thickness="2dp"
-    android:useLevel="false">
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_activated="true">
+        <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval" android:useLevel="false">
 
-    <solid android:color="@color/ball" />
+            <solid android:color="@color/ball" />
 
-    <size
-        android:width="24dp"
-        android:height="24dp" />
-</shape>
+            <size android:width="32dp" android:height="32dp" />
+        </shape>
+    </item>
+    <item>
+        <shape xmlns:android="http://schemas.android.com/apk/res/android" android:innerRadius="14dp" android:shape="ring" android:thickness="2dp" android:useLevel="false">
+
+            <solid android:color="@color/ball" />
+
+            <size android:width="32dp" android:height="32dp" />
+        </shape>
+    </item>
+</selector>

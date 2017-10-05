@@ -9,6 +9,8 @@ import android.os.Bundle
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.widget.AdapterView
+import kotlinx.android.synthetic.main.action_container.view.*
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**
@@ -22,6 +24,8 @@ class MainActivity : AppCompatActivity() {
         val deviceComponent = ComponentName(this, LockReceiver::class.java)
 
         val dpm = getDevicePolicyManager()
+        long_press_vibrator.isChecked = ActionSettings.needVibrate
+        long_press_vibrator.setOnCheckedChangeListener { _, isChecked -> ActionSettings.needVibrate = isChecked }
         open_device_permission.setOnClickListener {
             if (!dpm.isAdminActive(deviceComponent)) {
                 val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
@@ -49,20 +53,28 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        mock_home.setOnClickListener {
-            MockAction.HOME.trigger()
-        }
+        val mockActionArray = getMockActionArray()
 
-        mock_back.setOnClickListener {
-            MockAction.BACK.trigger()
-        }
+        arrayOf(action_click to GESTURE.CLICK,
+                action_swipe_left to GESTURE.SWIPE_LEFT,
+                action_swipe_top to GESTURE.SWIPE_TOP,
+                action_swipe_right to GESTURE.SWIPE_RIGHT,
+                action_swipe_bottom to GESTURE.SWIPE_BOTTOM)
+                .forEach { (view, gesture) ->
+                    view.action_name.text = gesture.label
+                    view.action_value.setSelection(mockActionArray.indexOf(gesture.getAction()))
+                    view.action_value.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                        override fun onItemSelected(parent: AdapterView<*>?, itemView: View?, position: Int, id: Long) {
+                            gesture.setAction(mockActionArray[position])
+                        }
 
-        mock_recents.setOnClickListener {
-            MockAction.RECENTS.trigger()
-        }
-        mock_lock.setOnClickListener {
-            MockAction.LOCK.trigger()
-        }
+                        override fun onNothingSelected(parent: AdapterView<*>?) {
+
+                        }
+                    }
+                }
+
+        action_click.action_value.setSelection(mockActionArray.indexOf(ActionSettings.click))
     }
 
 
@@ -75,3 +87,4 @@ class MainActivity : AppCompatActivity() {
 
     }
 }
+
