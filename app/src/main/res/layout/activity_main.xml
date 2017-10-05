@@ -39,6 +39,10 @@
         layout="@layout/action_container" />
 
     <include
+        android:id="@+id/action_double_click"
+        layout="@layout/action_container" />
+
+    <include
         android:id="@+id/action_swipe_left"
         layout="@layout/action_container" />
 

@@ -17,7 +17,13 @@ private const val TAG = "TrackingBallLayout"
 
 class TrackingBallLayout(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0, defStyleRes: Int = 0) : FrameLayout(context, attrs, defStyleAttr, defStyleRes) {
     private val vibrator = context.getVibrator()
-    private val virbratorPattern = longArrayOf(0L, 10L, 20L, 30L)
+    private val vibratorPattern = longArrayOf(0L, 10L, 20L, 30L)
+
+    var doubleClickEnabled = false
+        set(value) {
+            field = value
+            gestureDetector.setOnDoubleTapListener(if (value) gestureListener else null)
+        }
 
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0, 0)
     constructor(context: Context) : this(context, null, 0, 0)
@@ -39,14 +45,33 @@ class TrackingBallLayout(context: Context, attrs: AttributeSet? = null, defStyle
                 getChildAt(it).isActivated = true
             }
             if (ActionSettings.needVibrate) {
-                vibrator.vibrate(virbratorPattern, -1)
+                vibrator.vibrate(vibratorPattern, -1)
             }
         }
 
 
         override fun onSingleTapUp(e: MotionEvent?): Boolean {
+            if (doubleClickEnabled) {
+                return false
+            }
             GESTURE.CLICK.trigger()
             return true
+        }
+
+        override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+            if (doubleClickEnabled) {
+                GESTURE.CLICK.trigger()
+                return true
+            }
+            return false
+        }
+
+        override fun onDoubleTap(e: MotionEvent?): Boolean {
+            if (doubleClickEnabled) {
+                GESTURE.DOUBLE_CLICK.trigger()
+                return true
+            }
+            return false
         }
     }
 
@@ -62,6 +87,7 @@ class TrackingBallLayout(context: Context, attrs: AttributeSet? = null, defStyle
             ViewCompat.postInvalidateOnAnimation(this)
         }
     }
+
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
         return dragHelper.shouldInterceptTouchEvent(ev)

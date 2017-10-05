@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         val mockActionArray = getMockActionArray()
 
         arrayOf(action_click to GESTURE.CLICK,
+                action_double_click to GESTURE.DOUBLE_CLICK,
                 action_swipe_left to GESTURE.SWIPE_LEFT,
                 action_swipe_top to GESTURE.SWIPE_TOP,
                 action_swipe_right to GESTURE.SWIPE_RIGHT,

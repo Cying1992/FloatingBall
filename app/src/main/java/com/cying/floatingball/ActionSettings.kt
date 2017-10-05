@@ -7,6 +7,7 @@ import android.content.SharedPreferences
  */
 enum class GESTURE(val key: String, val label: String) {
     CLICK("click", "点击"),
+    DOUBLE_CLICK("double_click", "双击"),
     SWIPE_LEFT("left", "左滑"),
     SWIPE_TOP("top", "上滑"),
     SWIPE_RIGHT("right", "右滑"),
@@ -15,6 +16,7 @@ enum class GESTURE(val key: String, val label: String) {
     fun trigger(): Boolean {
         val action = when (this) {
             CLICK -> ActionSettings.click
+            DOUBLE_CLICK -> ActionSettings.doubleClick
             SWIPE_LEFT -> ActionSettings.left
             SWIPE_TOP -> ActionSettings.top
             SWIPE_RIGHT -> ActionSettings.right
@@ -26,6 +28,7 @@ enum class GESTURE(val key: String, val label: String) {
 
     fun getAction(): Int = when (this) {
         CLICK -> ActionSettings.click
+        DOUBLE_CLICK -> ActionSettings.doubleClick
         SWIPE_LEFT -> ActionSettings.left
         SWIPE_TOP -> ActionSettings.top
         SWIPE_RIGHT -> ActionSettings.right
@@ -36,6 +39,10 @@ enum class GESTURE(val key: String, val label: String) {
     fun setAction(action: Int) {
         when (this) {
             CLICK -> ActionSettings.click = action
+            DOUBLE_CLICK -> {
+                ActionSettings.doubleClick = action
+                FloatingBallService.instance?.enableDoubleClick(action != MockAction.NONE.action)
+            }
             SWIPE_LEFT -> ActionSettings.left = action
             SWIPE_TOP -> ActionSettings.top = action
             SWIPE_RIGHT -> ActionSettings.right = action
@@ -55,6 +62,7 @@ object ActionSettings : Preferences {
     var top: Int  by preference(GESTURE.SWIPE_TOP.key, MockAction.HOME.action)
     var right: Int by preference(GESTURE.SWIPE_RIGHT.key, MockAction.NOTIFICATIONS.action)
     var bottom: Int by preference(GESTURE.SWIPE_BOTTOM.key, MockAction.LOCK.action)
+    var doubleClick: Int by preference(GESTURE.DOUBLE_CLICK.key, MockAction.NONE.action)
     var needVibrate: Boolean by preference("needVibrate", false)
 
 }

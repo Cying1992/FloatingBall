@@ -1,12 +1,10 @@
 package com.cying.floatingball
 
 import android.accessibilityservice.AccessibilityService
-import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.graphics.Point
-import android.support.v4.view.accessibility.AccessibilityManagerCompat
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -22,9 +20,6 @@ import java.lang.reflect.Field
 
 private const val TAG = "FloatingBallService"
 
-
-private var instance: AccessibilityService? = null
-
 fun getMockActionArray(): IntArray {
     return MockAction.values().map { it.action }.toIntArray()
 }
@@ -32,7 +27,7 @@ fun getMockActionArray(): IntArray {
 
 enum class MockAction(val action: Int) {
     NONE(0) {
-        override fun trigger(): Boolean = true
+        override fun trigger(): Boolean = false
     },
     BACK(AccessibilityService.GLOBAL_ACTION_BACK),
     HOME(AccessibilityService.GLOBAL_ACTION_HOME),
@@ -40,7 +35,7 @@ enum class MockAction(val action: Int) {
     NOTIFICATIONS(AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS),
     LOCK(-1) {
         override fun trigger(): Boolean {
-            val dpm = instance?.getDevicePolicyManager()
+            val dpm = FloatingBallService.instance?.getDevicePolicyManager()
 
             return dpm?.run {
                 lockNow()
@@ -50,7 +45,7 @@ enum class MockAction(val action: Int) {
     };
 
     open fun trigger(): Boolean {
-        return instance?.performGlobalAction(action) ?: false
+        return FloatingBallService.instance?.performGlobalAction(action) ?: false
     }
 
     companion object {
@@ -80,6 +75,11 @@ fun getStatusBarHeight(context: Context): Int {
 
 class FloatingBallService : AccessibilityService() {
 
+    companion object {
+        var instance: FloatingBallService? = null
+            private set
+    }
+
     private var ball: TrackingBallLayout? = null
 
     private var STATUS_HEIGHT = 0
@@ -100,6 +100,10 @@ class FloatingBallService : AccessibilityService() {
             }
         }
         wm.addView(ball, pm)
+    }
+
+    fun enableDoubleClick(enabled: Boolean) {
+        ball?.doubleClickEnabled = enabled
     }
 
     override fun onServiceConnected() {
@@ -147,11 +151,3 @@ class FloatingBallService : AccessibilityService() {
     }
 }
 
-
-fun isFloatingBallServiceEnabled(context: Context): Boolean {
-    if (instance == null) {
-        return false
-    }
-    val list = AccessibilityManagerCompat.getEnabledAccessibilityServiceList(context.getAccessibilityServiceManager(), AccessibilityServiceInfo.FEEDBACK_GENERIC)
-    return list?.any { it?.settingsActivityName == MainActivity::class.java.name } ?: false
-}
