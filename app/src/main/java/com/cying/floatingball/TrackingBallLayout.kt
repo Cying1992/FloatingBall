@@ -75,8 +75,7 @@ class TrackingBallLayout(context: Context, attrs: AttributeSet? = null, defStyle
         }
     }
 
-    var updatePositionCallback: UpdatePositionCallback? = null
-        set
+    var updatePositionCallback: ((View, Float, Float) -> Unit)? = null
 
     private val gestureDetector = GestureDetector(context, gestureListener).apply {
         setIsLongpressEnabled(true)
@@ -103,7 +102,7 @@ class TrackingBallLayout(context: Context, attrs: AttributeSet? = null, defStyle
 
             MotionEvent.ACTION_MOVE -> {
                 if (isLongPressing) {
-                    updatePositionCallback?.update(this, ev.rawX, ev.rawY)
+                    updatePositionCallback?.invoke(this, ev.rawX, ev.rawY)
                 } else {
                     moveVertical = Math.abs(ev.y - initY) > Math.abs(ev.x - initX)
                 }

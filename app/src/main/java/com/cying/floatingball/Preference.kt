@@ -57,7 +57,6 @@ inline fun <reified T : Any> preference(name: String): Preference<T> = when (T::
     String::class.javaObjectType -> preference(name, "" as T)
     Long::class.javaObjectType -> preference(name, 0L as T)
     Boolean::class.javaObjectType -> preference(name, false as T)
-
     Float::class.javaObjectType -> preference(name, 0F as T)
     else -> {
         //Log.i("类型", "${T::class} , ${Boolean::class == T::class}")

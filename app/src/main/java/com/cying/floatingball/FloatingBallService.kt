@@ -10,7 +10,6 @@ import android.support.v4.view.accessibility.AccessibilityManagerCompat
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
-import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import org.jetbrains.anko.dip
@@ -93,14 +92,13 @@ class FloatingBallService : AccessibilityService() {
         val wm = getWindowManager()
         val pm = createSmallWindowParams(wm)
         ball = LayoutInflater.from(this).inflate(R.layout.tracking_ball, null) as TrackingBallLayout?
-        ball?.updatePositionCallback = object : UpdatePositionCallback {
-            override fun update(view: View, x: Float, y: Float) {
-                pm.x = x.toInt() - view.width / 2
-                pm.y = y.toInt() - STATUS_HEIGHT - view.height / 2
-                wm.updateViewLayout(ball, pm)
-                resources.displayMetrics.widthPixels
-            }
+        ball?.updatePositionCallback = { view, x, y ->
+            pm.x = x.toInt() - view.width / 2
+            pm.y = y.toInt() - STATUS_HEIGHT - view.height / 2
+            wm.updateViewLayout(ball, pm)
+            resources.displayMetrics.widthPixels
         }
+        val b = ball?.updatePositionCallback
         wm.addView(ball, pm)
     }
 
