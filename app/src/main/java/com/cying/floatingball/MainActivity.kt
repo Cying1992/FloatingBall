@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import kotlinx.android.synthetic.main.action_container.view.*
@@ -16,6 +17,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 /**
  * Created by Cying on 17/9/27.
  */
+const val CMD1 = "settings put secure enabled_accessibility_services com.cying.floatingball/com.cying.floatingball.FloatingBallService"
+const val CMD2 = "settings put secure accessibility_enabled 1"
+
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,10 +86,29 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         val deviceComponent = ComponentName(this, LockReceiver::class.java)
+        /* if (!isFloatingBallServiceEnabled(this)) {
+             //execCommand("reboot")
+             //execCommand(CMD1)
+             //execCommand(CMD2)
 
+         }*/
+        // open_accessibility.visibility = if (isFloatingBallServiceEnabled(this)) View.GONE else View.VISIBLE
         open_device_permission.visibility = if (getDevicePolicyManager().isAdminActive(deviceComponent)) View.GONE else View.VISIBLE
         open_alert_permission.visibility = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.canDrawOverlays(this)) View.GONE else View.VISIBLE
 
     }
+}
+
+fun execCommand(cmd: String): Boolean {
+    Log.i("execCommand", "cmd= $cmd")
+    val process = Runtime.getRuntime().exec(cmd)
+    process.inputStream.bufferedReader().use {
+        it.readLines().forEach { Log.i("execCommand-SUCCESS", it) }
+    }
+    process.errorStream.bufferedReader().use {
+        it.readLines().forEach { Log.i("execCommand-ERROR", it) }
+    }
+    process.destroy()
+    return false
 }
 

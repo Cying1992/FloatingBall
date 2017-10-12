@@ -1,10 +1,12 @@
 package com.cying.floatingball
 
 import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.graphics.Point
+import android.support.v4.view.accessibility.AccessibilityManagerCompat
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -149,5 +151,13 @@ class FloatingBallService : AccessibilityService() {
         smallWindowParams.y = point.y - dip(120)
         return smallWindowParams
     }
+}
+
+fun isFloatingBallServiceEnabled(context: Context): Boolean {
+    if (FloatingBallService.instance == null) {
+        return false
+    }
+    val list = AccessibilityManagerCompat.getEnabledAccessibilityServiceList(context.getAccessibilityServiceManager(), AccessibilityServiceInfo.FEEDBACK_GENERIC)
+    return list?.any { it?.settingsActivityName == MainActivity::class.java.name } ?: false
 }
 
