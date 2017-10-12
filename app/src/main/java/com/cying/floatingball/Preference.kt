@@ -44,4 +44,23 @@ class Preference<T>(val name: String, val default: T) : ReadWriteProperty<Prefer
 
 }
 
-fun <T : Any> preference(name: String, default: T) = Preference(name, default)
+fun <T : Any> preference(name: String, default: T): Preference<T> = Preference(name, default)
+
+//参照理解，t始终是引用类型，即包装类型，所以T也应该始终是引用类型才能让下列等式成立
+inline fun <reified T : Any> foo(t: T) {
+    assert(T::class.java == t.javaClass)
+}
+
+//不能直接比较T::class，因为reified T返回的是包装类型，而Int::class返回的是基本类型，所以比较他们的javaObjectType
+inline fun <reified T : Any> preference(name: String): Preference<T> = when (T::class.javaObjectType) {
+    Int::class.javaObjectType -> preference(name, 0 as T)
+    String::class.javaObjectType -> preference(name, "" as T)
+    Long::class.javaObjectType -> preference(name, 0L as T)
+    Boolean::class.javaObjectType -> preference(name, false as T)
+
+    Float::class.javaObjectType -> preference(name, 0F as T)
+    else -> {
+        //Log.i("类型", "${T::class} , ${Boolean::class == T::class}")
+        throw IllegalArgumentException("This type is not supported")
+    }
+}

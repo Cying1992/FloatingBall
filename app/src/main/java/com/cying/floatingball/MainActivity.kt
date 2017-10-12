@@ -67,10 +67,10 @@ class MainActivity : AppCompatActivity() {
                 action_swipe_bottom to GESTURE.SWIPE_BOTTOM)
                 .forEach { (view, gesture) ->
                     view.action_name.text = gesture.label
-                    view.action_value.setSelection(mockActionArray.indexOf(gesture.getAction()))
+                    view.action_value.setSelection(mockActionArray.indexOf(gesture.action))
                     view.action_value.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                         override fun onItemSelected(parent: AdapterView<*>?, itemView: View?, position: Int, id: Long) {
-                            gesture.setAction(mockActionArray[position])
+                            gesture.action = mockActionArray[position]
                         }
 
                         override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -79,7 +79,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-        action_click.action_value.setSelection(mockActionArray.indexOf(ActionSettings.click))
     }
 
 
