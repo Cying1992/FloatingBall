@@ -8,7 +8,6 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
-import org.jetbrains.anko.dip
 
 /**
  * Created by Cying on 17/9/29.
@@ -31,9 +30,6 @@ class TrackingBallLayout @JvmOverloads constructor(context: Context, attrs: Attr
 
     private var isLongPressing = false
     private var moveVertical = false
-
-    private val MOVE_SLOP = dip(2)
-
     private var initX = 0F
     private var initY = 0F
     private val gestureListener = object : GestureDetector.SimpleOnGestureListener() {

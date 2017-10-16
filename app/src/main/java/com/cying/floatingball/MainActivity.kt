@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val mockActionArray = getMockActionArray()
+        val mockActionArray = MockAction.getActionArray()
 
         arrayOf(action_click to GESTURE.CLICK,
                 action_double_click to GESTURE.DOUBLE_CLICK,

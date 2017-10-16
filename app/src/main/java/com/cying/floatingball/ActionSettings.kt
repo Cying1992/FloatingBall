@@ -21,8 +21,7 @@ enum class GESTURE(val key: String, val label: String) : Preferences by ActionSe
         override var action: Int by preference(MockAction.BACK)
     },
     DOUBLE_CLICK("double_click", "双击") {
-        override var action: Int by preference(key, MockAction.NONE.action) {
-            property, newValue ->
+        override var action: Int by preference(key, MockAction.NONE.action) { _, newValue ->
             FloatingBallService.instance?.enableDoubleClick(newValue != MockAction.NONE.action)
         }
     },
@@ -41,9 +40,7 @@ enum class GESTURE(val key: String, val label: String) : Preferences by ActionSe
 
     abstract var action: Int
 
-    fun trigger(): Boolean {
-        return MockAction.getByAction(action)?.trigger() ?: false
-    }
+    fun trigger(): Boolean = MockAction.getByAction(action)?.trigger() ?: false
 
     protected fun preference(defaultAction: MockAction) = preference(key, defaultAction.action)
 

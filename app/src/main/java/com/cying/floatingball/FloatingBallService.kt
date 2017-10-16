@@ -21,10 +21,6 @@ import java.lang.reflect.Field
 
 private const val TAG = "FloatingBallService"
 
-fun getMockActionArray(): IntArray {
-    return MockAction.values().map { it.action }.toIntArray()
-}
-
 
 enum class MockAction(val action: Int) {
     NONE(0) {
@@ -51,11 +47,14 @@ enum class MockAction(val action: Int) {
 
     companion object {
         fun getByAction(action: Int) = MockAction.values().firstOrNull { it.action == action }
+        fun getActionArray(): IntArray {
+            return MockAction.values().map { it.action }.toIntArray()
+        }
     }
 
 }
 
-fun getStatusBarHeight(context: Context): Int {
+private fun getStatusBarHeight(context: Context): Int {
     var c: Class<*>? = null
     var obj: Any? = null
     var field: Field? = null
@@ -151,7 +150,7 @@ class FloatingBallService : AccessibilityService() {
     }
 }
 
-fun isFloatingBallServiceEnabled(context: Context): Boolean {
+private fun isFloatingBallServiceEnabled(context: Context): Boolean {
     if (FloatingBallService.instance == null) {
         return false
     }
