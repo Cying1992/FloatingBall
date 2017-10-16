@@ -15,19 +15,17 @@ import org.jetbrains.anko.dip
  */
 private const val TAG = "TrackingBallLayout"
 
-class TrackingBallLayout(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0, defStyleRes: Int = 0) : FrameLayout(context, attrs, defStyleAttr, defStyleRes) {
+class TrackingBallLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0, defStyleRes: Int = 0) : FrameLayout(context, attrs, defStyleAttr, defStyleRes) {
     private val vibrator = context.getVibrator()
     private val vibratorPattern = longArrayOf(0L, 10L, 20L, 30L)
 
     var doubleClickEnabled = false
         set(value) {
+            if (field != value) {
+                gestureDetector.setOnDoubleTapListener(if (value) gestureListener else null)
+            }
             field = value
-            gestureDetector.setOnDoubleTapListener(if (value) gestureListener else null)
         }
-
-    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0, 0)
-    constructor(context: Context) : this(context, null, 0, 0)
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : this(context, attrs, defStyleAttr, 0)
 
     private val dragHelper = ViewDragHelper.create(this, 0.5F, DragCallback())
 
