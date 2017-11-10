@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FloatingBall</string>
+    <string name="app_name">悬浮球</string>
     <string name="lock_desc">锁屏描述</string>
     <string name="lock_label">锁屏标签</string>
     <string name="accessibility_desc">打开开头就能开启悬浮球</string>
@@ -10,7 +10,8 @@
         <item>切换app</item>
         <item>下拉通知</item>
         <item>锁屏</item>
-
+        <item>自动滚动</item>
+        <item>屏蔽广告</item>
     </string-array>
     <string-array name="action_names">
         <item>点击</item>

@@ -82,9 +82,7 @@ class TrackingBallLayout @JvmOverloads constructor(context: Context, attrs: Attr
     }
 
 
-    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-        return dragHelper.shouldInterceptTouchEvent(ev)
-    }
+    override fun onInterceptTouchEvent(ev: MotionEvent) = dragHelper.shouldInterceptTouchEvent(ev)
 
     override fun onTouchEvent(ev: MotionEvent): Boolean {
 
@@ -118,9 +116,8 @@ class TrackingBallLayout @JvmOverloads constructor(context: Context, attrs: Attr
 
     inner class DragCallback : ViewDragHelper.Callback() {
 
-        override fun tryCaptureView(child: View, pointerId: Int): Boolean {
-            return !isLongPressing && child.id == R.id.ball
-        }
+        override fun tryCaptureView(child: View, pointerId: Int) =
+                !isLongPressing && child.id == R.id.ball
 
         override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
 
@@ -151,13 +148,9 @@ class TrackingBallLayout @JvmOverloads constructor(context: Context, attrs: Attr
         }
 
 
-        override fun getViewVerticalDragRange(child: View): Int {
-            return child.height
-        }
+        override fun getViewVerticalDragRange(child: View) = child.height
 
-        override fun getViewHorizontalDragRange(child: View): Int {
-            return child.width
-        }
+        override fun getViewHorizontalDragRange(child: View) = child.width
 
         override fun clampViewPositionVertical(child: View, top: Int, dy: Int): Int {
             if (!moveVertical || isLongPressing) {

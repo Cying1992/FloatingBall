@@ -25,6 +25,12 @@
         android:layout_height="wrap_content"
         android:text="开启设备管理器" />
 
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/auto_close_ad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="自动关闭广告" />
 
     <android.support.v7.widget.SwitchCompat
         android:id="@+id/long_press_vibrator"
@@ -57,4 +63,30 @@
     <include
         android:id="@+id/action_swipe_bottom"
         layout="@layout/action_container" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <SeekBar
+            android:id="@+id/seek_bar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="9"
+            android:progress="0" />
+
+        <TextView
+            android:id="@+id/scroll_delay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/ad_test"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="去往广告测试界面" />
 </LinearLayout>

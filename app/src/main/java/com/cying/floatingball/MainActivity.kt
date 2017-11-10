@@ -11,8 +11,10 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
+import android.widget.SeekBar
 import kotlinx.android.synthetic.main.action_container.view.*
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.startActivity
 
 /**
  * Created by Cying on 17/9/27.
@@ -30,6 +32,9 @@ class MainActivity : AppCompatActivity() {
         val dpm = getDevicePolicyManager()
         long_press_vibrator.isChecked = ActionSettings.needVibrate
         long_press_vibrator.setOnCheckedChangeListener { _, isChecked -> ActionSettings.needVibrate = isChecked }
+        auto_close_ad.isChecked = ActionSettings.autoCloseAd
+        auto_close_ad.setOnCheckedChangeListener { _, isChecked -> ActionSettings.autoCloseAd = isChecked }
+
         open_device_permission.setOnClickListener {
             if (!dpm.isAdminActive(deviceComponent)) {
                 val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
@@ -38,6 +43,9 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
+
+
+        ad_test.setOnClickListener { _ -> startActivity<ADTestActivity>() }
 
         open_alert_permission.setOnClickListener {
             val context = it.context
@@ -56,31 +64,45 @@ class MainActivity : AppCompatActivity() {
                 it.context.startActivity(intent)
             }
         }
+        val delay = ActionSettings.scrollDelay
+        scroll_delay.text = "${delay}秒"
+        seek_bar.progress = delay
+        seek_bar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            }
 
-        val mockActionArray = MockAction.getActionArray()
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                ActionSettings.scrollDelay = seekBar.progress + 1
+            }
 
-        arrayOf(action_click to GESTURE.CLICK,
-                action_double_click to GESTURE.DOUBLE_CLICK,
-                action_swipe_left to GESTURE.SWIPE_LEFT,
-                action_swipe_top to GESTURE.SWIPE_TOP,
-                action_swipe_right to GESTURE.SWIPE_RIGHT,
-                action_swipe_bottom to GESTURE.SWIPE_BOTTOM)
-                .forEach { (view, gesture) ->
-                    view.action_name.text = gesture.label
-                    view.action_value.setSelection(mockActionArray.indexOf(gesture.action))
-                    view.action_value.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                        override fun onItemSelected(parent: AdapterView<*>?, itemView: View?, position: Int, id: Long) {
-                            gesture.action = mockActionArray[position]
-                        }
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                scroll_delay.text = "${progress + 1}秒"
+            }
+        })
 
-                        override fun onNothingSelected(parent: AdapterView<*>?) {
-
-                        }
-                    }
-                }
+        action_click bind GESTURE.CLICK
+        action_double_click bind GESTURE.DOUBLE_CLICK
+        action_swipe_left bind GESTURE.SWIPE_LEFT
+        action_swipe_top bind GESTURE.SWIPE_TOP
+        action_swipe_right bind GESTURE.SWIPE_RIGHT
+        action_swipe_bottom bind GESTURE.SWIPE_BOTTOM
 
     }
 
+    private infix fun View.bind(gesture: GESTURE) {
+        val mockActionArray = MockAction.actionArray
+        action_name.text = gesture.label
+        action_value.setSelection(mockActionArray.indexOf(gesture.action))
+        action_value.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, itemView: View?, position: Int, id: Long) {
+                gesture.action = mockActionArray[position]
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+        }
+    }
 
     override fun onResume() {
         super.onResume()

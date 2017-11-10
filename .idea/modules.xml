@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/FloatingBall.iml" filepath="$PROJECT_DIR$/FloatingBall.iml" />
+      <module fileurl="file://$PROJECT_DIR$/accessibility/accessibility.iml" filepath="$PROJECT_DIR$/accessibility/accessibility.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

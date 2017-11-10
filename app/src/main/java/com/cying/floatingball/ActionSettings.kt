@@ -12,6 +12,10 @@ object ActionSettings : Preferences {
     }
 
     var needVibrate: Boolean by preference("needVibrate")
+    var scrollDelay: Int by preference("scrollDelay", 1)
+    var autoCloseAd: Boolean by preference("autoCloseAd") { property, newValue ->
+        FloatingBallService.instance?.enableAutoCloseAd(newValue)
+    }
 }
 
 enum class GESTURE(val key: String, val label: String) : Preferences by ActionSettings {

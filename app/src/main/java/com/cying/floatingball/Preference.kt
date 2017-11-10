@@ -3,6 +3,8 @@ package com.cying.floatingball
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import java.math.BigDecimal
+import java.util.*
+import kotlin.collections.HashSet
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
@@ -26,6 +28,7 @@ open class Preference<T>(val name: String, val default: T) : ReadWriteProperty<P
             is Boolean -> getBoolean(name, default)
             is Float -> getFloat(name, default)
             is BigDecimal -> BigDecimal(getString(name, default.toString()))
+            is Set<*> -> getStringSet(name, Collections.emptySet())
             else -> throw IllegalArgumentException(
                     "This type can be saved into Preferences")
         }
@@ -36,6 +39,7 @@ open class Preference<T>(val name: String, val default: T) : ReadWriteProperty<P
     @SuppressLint("CommitPrefEdits")
     override fun setValue(thisRef: Preferences, property: KProperty<*>, value: T) {
         with(thisRef.preferences.edit()) {
+            @Suppress("UNCHECKED_CAST")
             when (value) {
                 is Long -> putLong(name, value)
                 is String -> putString(name, value)
@@ -43,13 +47,14 @@ open class Preference<T>(val name: String, val default: T) : ReadWriteProperty<P
                 is Boolean -> putBoolean(name, value)
                 is Float -> putFloat(name, value)
                 is BigDecimal -> putString(name, value.toString())
+                is Set<*> -> putStringSet(name, value as Set<String>)
                 else -> throw IllegalArgumentException("This type can be saved into Preferences")
             }.apply()
         }
         afterChange(property, value)
     }
 
-    protected open fun afterChange(property: KProperty<*>, newValue: T): Unit {}
+    protected open fun afterChange(property: KProperty<*>, newValue: T) {}
 
     companion object {
         @Suppress("IMPLICIT_CAST_TO_ANY", "UNCHECKED_CAST")
@@ -60,6 +65,7 @@ open class Preference<T>(val name: String, val default: T) : ReadWriteProperty<P
             Boolean::class.javaObjectType -> false
             Float::class.javaObjectType -> 0F
             BigDecimal::class.javaObjectType -> BigDecimal.ZERO
+            Set::class.javaObjectType -> HashSet<String>()
             else -> {
                 throw IllegalArgumentException("This type is not supported")
             }
